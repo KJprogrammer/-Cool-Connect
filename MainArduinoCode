@@ -1,0 +1,34 @@
+
+#define echoPin 2      // Define pin for the echo of ultrasonic sensor
+#define trigPin 3      // Define pin for the trigger of ultrasonic sensor
+#define motorPin 4     // Define pin for motor control
+
+void setup() {
+  Serial.begin(9600);               // Initialize serial communication at 9600 baud rate
+  pinMode(trigPin, OUTPUT);         // Set the ultrasonic trigger pin as an output
+  pinMode(echoPin, INPUT);          // Set the ultrasonic echo pin as an input
+  pinMode(motorPin, OUTPUT);        // Corrected: Set the motor control pin as an output
+
+  digitalWrite(motorPin, LOW);      // Initialize motor state to LOW (motor off)
+}
+
+void loop() {
+  int duration, distance;
+  digitalWrite(trigPin, HIGH);      // Send a 10-microsecond pulse to the trigger pin
+  delayMicroseconds(10);            // The pulse duration recommended for most ultrasonic sensors
+  digitalWrite(trigPin, LOW);       // Stop the pulse
+
+  duration = pulseIn(echoPin, HIGH); // Measure the echo pulse duration in microseconds
+  distance = duration / 58.2;        // Convert duration to distance (in cm)
+
+  if (distance <= 20 && distance != 0) {  // Check if the object is within 20cm and not 0 (out of range)
+    digitalWrite(motorPin, HIGH);    // Turn motor on if object is in range
+    Serial.print(distance);          // Print distance to the serial monitor
+    Serial.println(" cm");
+  } else {
+    digitalWrite(motorPin, LOW);     // Turn motor off if object is out of range or too close
+    Serial.println("Out of range");  // Print out of range message
+  }
+  
+  delay(500);                        // Wait half a second before the next measurement
+}
